@@ -1,0 +1,1 @@
+from cafe_service.routes.cafes.cafes import router as cafe_router

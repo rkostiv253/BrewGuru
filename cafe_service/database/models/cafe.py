@@ -87,7 +87,7 @@ class CafeOpeningHoursModel(Base):
     weekday: Mapped["WeekdayEnum"] = mapped_column(nullable=False)
     open_time: Mapped[time] = mapped_column(Time, nullable=False)
     close_time: Mapped[time] = mapped_column(Time, nullable=False)
-    is_closed: Mapped[bool] = mapped_column(nullable=False)
+    is_open: Mapped[bool] = mapped_column(nullable=False)
 
     __table_args__ = (
         UniqueConstraint("cafe_id", "weekday", name="unique_time_constraint"),
@@ -152,28 +152,6 @@ class RatingModel(Base):
         return f"<User id={self.user_id} gave cafe={self.cafe_id} {self.rating}/10>"
 
 
-class CafeReactionModel(Base):
-    __tablename__ = "cafe_reactions"
-
-    id = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id = mapped_column(ForeignKey("users.id"), nullable=False)
-    cafe_id = mapped_column(ForeignKey("cafes.id"), nullable=False)
-
-    reaction: Mapped["ReactionTypeEnum"] = mapped_column(
-        Enum(ReactionTypeEnum),
-        nullable=False
-    )
-
-    created_at = mapped_column(DateTime, default=func.now())
-
-    user: Mapped["UserModel"] = relationship(back_populates="reactions")
-    cafe: Mapped["CafeModel"] = relationship(back_populates="reactions")
-
-    __table_args__ = (
-        UniqueConstraint("user_id", "cafe_id", name="unique_user_cafe_reaction"),
-    )
-
-
 class AmenityModel(Base):
     __tablename__ = "amenities"
 
@@ -193,10 +171,18 @@ class MenuModel(Base):
     __tablename__ = "menus"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     cafe: Mapped["CafeModel"] = relationship("CafeModel", back_populates="menus")
     cafe_id: Mapped[int] = mapped_column(ForeignKey("cafes.id"), nullable=False)
-    menu_items: Mapped[list["MenuItemModel"]] = relationship("MenuItemModel", back_populates="menu")
+    items: Mapped[list["MenuItemModel"]] = relationship(
+        "MenuItemModel",
+        back_populates="menu",
+        cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        UniqueConstraint("cafe_id", "name", name="uq_menu_cafe_name"),
+    )
 
     def __repr__(self):
         return f"<Food menu (name='{self.name}')>"
@@ -206,8 +192,8 @@ class MenuItemModel(Base):
     __tablename__ = "menu_items"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    menu_id: Mapped[int] = mapped_column(ForeignKey("menus.id"), nullable=False)
-    menu: Mapped["MenuModel"] = relationship("MenuModel", back_populates="menu_items")
+    menu_id: Mapped[int] = mapped_column(ForeignKey("menus.id"), nullable=False, ondelete="CASCADE")
+    menu: Mapped["MenuModel"] = relationship("MenuModel", back_populates="items")
     price: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
 
 
@@ -224,12 +210,11 @@ class CafeModel(Base):
         back_populates="cafe"
     )
     phone: Mapped[str] = mapped_column(String(100), nullable=False)
-    website: Mapped[str] = mapped_column(String(100), nullable=False)
-    instagram: Mapped[str] = mapped_column(String(100), nullable=False)
+    website: Mapped[str] = mapped_column(String(100), nullable=True)
+    instagram: Mapped[str] = mapped_column(String(100), nullable=True)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     seats: Mapped[int] = mapped_column(Integer, nullable=False)
     reviews: Mapped[list["ReviewModel"]] = relationship("ReviewModel", back_populates="cafe")
-    reactions: Mapped[list["CafeReactionModel"]] = relationship("CafeReactionModel", back_populates="cafe")
     favourites: Mapped[list["FavouriteModel"]] = relationship(
         "FavouriteModel",
         secondary=FavouritesCafesModel,

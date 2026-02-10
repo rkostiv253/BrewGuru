@@ -17,7 +17,7 @@ from cafe_service.database.models.accounts import (
     PasswordResetTokenModel,
     RefreshTokenModel
 )
-from cafe_service.exceptions import BaseSecurityError
+from cafe_service.exceptions.security import BaseSecurityError
 from cafe_service.notifications.interfaces import EmailSenderInterface
 from cafe_service.schemas.accounts import (
     UserRegistrationRequestSchema,

@@ -192,7 +192,7 @@ class MenuItemModel(Base):
     __tablename__ = "menu_items"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    menu_id: Mapped[int] = mapped_column(ForeignKey("menus.id"), nullable=False, ondelete="CASCADE")
+    menu_id: Mapped[int] = mapped_column(ForeignKey("menus.id", ondelete="CASCADE"), nullable=False)
     menu: Mapped["MenuModel"] = relationship("MenuModel", back_populates="items")
     price: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
 

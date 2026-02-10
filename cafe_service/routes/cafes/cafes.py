@@ -4,11 +4,28 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from cafe_service.config.dependencies import user_is_staff
 from cafe_service.database.models.accounts import UserModel
-from cafe_service.database.models.cafe import CafeModel, AmenityModel, CityModel, MenuModel, MenuItemModel, \
+from cafe_service.database.models.cafe import (
+    CafeModel,
+    AmenityModel,
+    CityModel,
+    MenuModel,
+    MenuItemModel,
     CafeOpeningHoursModel
-from cafe_service.schemas.cafes import CafeListResponseSchema, CafeQueryParamsSchema, CafeListItemSchema, \
-    CafeDetailSchema, CafeCreateSchema, AmenityRefSchema, MenuRefSchema, CafeUpdateSchema
+)
+from cafe_service.schemas.cafes import (
+    CafeListResponseSchema,
+    CafeQueryParamsSchema,
+    CafeListItemSchema,
+    CafeDetailSchema,
+    CafeCreateSchema,
+    AmenityRefSchema,
+    MenuRefSchema,
+    CafeUpdateSchema
+)
+from cafe_service.database import get_db
+
 
 router = APIRouter()
 

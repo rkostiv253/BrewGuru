@@ -22,7 +22,6 @@ from sqlalchemy.orm import (
 )
 
 from cafe_service.database.models.base import Base
-from cafe_service.database.models.cafe import CafeReactionModel
 from cafe_service.database.models.cafe import FavouriteModel
 from cafe_service.database.models.cafe import RatingModel
 from cafe_service.database.models.cafe import ReviewModel
@@ -94,11 +93,6 @@ class UserModel(Base):
     reviews: Mapped[list["ReviewModel"]] = relationship(
         "ReviewModel",
         back_populates="user",
-    )
-    reactions: Mapped[list["CafeReactionModel"]] = relationship(
-        "CafeReactionModel",
-        back_populates="user",
-        cascade="all, delete-orphan"
     )
     favourites: Mapped[list["FavouriteModel"]] = relationship(
         "FavouriteModel",

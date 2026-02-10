@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 
-from cafe_service.routes import cafe_router
+from cafe_service.routes import (
+    cafe_router,
+    accounts_router,
+    cafes_favourites_router,
+    cafes_ratings_router,
+    cafes_reviews_router
+)
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,4 +27,8 @@ app.add_middleware(
 api_version_prefix = "/api/v1"
 
 
-app.include_router(cafe_router, prefix=f"{api_version_prefix}/cinema", tags=["brewguru"])
+app.include_router(cafe_router, prefix=f"{api_version_prefix}/brewguru", tags=["cafes"])
+app.include_router(accounts_router, prefix=f"{api_version_prefix}/accounts", tags=["accounts"])
+app.include_router(cafes_favourites_router, prefix=f"{api_version_prefix}/favourites", tags=["favourites"])
+app.include_router(cafes_ratings_router, prefix=f"{api_version_prefix}/ratings", tags=["ratings"])
+app.include_router(cafes_reviews_router, prefix=f"{api_version_prefix}/reviews", tags=["reviews"])

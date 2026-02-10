@@ -4,9 +4,9 @@ from sqlalchemy import select, exists, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from cinema.config.dependencies import get_user, get_movie
-from cinema.database.models.accounts import UserModel
-from cinema.database import get_db
+from cafe_service.config.dependencies import get_user, get_cafe
+from cafe_service.database.models.accounts import UserModel
+from cafe_service.database import get_db
 
 from cafe_service.database.models.cafe import CafeModel, FavouriteModel, FavouritesCafesModel
 from cafe_service.schemas.accounts import MessageResponseSchema

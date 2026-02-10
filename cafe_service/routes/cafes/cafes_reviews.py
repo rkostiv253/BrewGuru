@@ -5,9 +5,9 @@ from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from cinema.config.dependencies import get_user, get_movie
+from cafe_service.config.dependencies import get_user, get_cafe
 from cafe_service.database.models.accounts import UserModel
-from cinema.database import get_db
+from cafe_service.database import get_db
 
 from cafe_service.database.models.cafe import ReviewModel, CafeModel
 from cafe_service.schemas.cafes import ReviewCreateResponseSchema, ReviewCreateSchema, ReviewReadSchema
@@ -88,7 +88,7 @@ async def post_review(
             )
 async def read_reviews(
         db: AsyncSession = Depends(get_db),
-        cafe: CafeModel = Depends(get_movie),
+        cafe: CafeModel = Depends(get_cafe),
         _user: UserModel = Depends(get_user),
 ) -> list[ReviewReadSchema]:
     """
@@ -150,7 +150,7 @@ async def read_reviews(
 async def delete_review(
         review_id: int,
         db: AsyncSession = Depends(get_db),
-        cafe: CafeModel = Depends(get_movie),
+        cafe: CafeModel = Depends(get_cafe),
         user: UserModel = Depends(get_user)
 ):
     """

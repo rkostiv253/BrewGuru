@@ -3,13 +3,12 @@ from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from cinema.config.dependencies import get_user, get_movie
-from cinema.database.models.accounts import UserModel
-from cinema.database.models.movies import MovieModel, RatingModel, RatingTypeEnum
-from cinema.schemas.movies import RatingRequestSchema, RatingResponseSchema
-from cinema.database import get_db
+from cafe_service.config.dependencies import get_user, get_cafe
+from cafe_service.database.models.accounts import UserModel
+from cafe_service.database.models.cafe import CafeModel, RatingModel, RatingTypeEnum
+from cafe_service.schemas.cafes import RatingRequestSchema, RatingResponseSchema
+from cafe_service.database import get_db
 
-from cafe_service.database.models.cafe import CafeModel
 
 router = APIRouter()
 

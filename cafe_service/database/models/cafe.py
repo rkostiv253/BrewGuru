@@ -178,7 +178,7 @@ class MenuModel(Base):
         "MenuItemModel",
         back_populates="menu",
         cascade="all, delete-orphan"
-    )
+    ),
 
     __table_args__ = (
         UniqueConstraint("cafe_id", "name", name="uq_menu_cafe_name"),

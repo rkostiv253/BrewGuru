@@ -36,6 +36,11 @@ class UserGroupEnum(str, enum.Enum):
     ADMIN = "admin"
 
 
+class GenderEnum(str, enum.Enum):
+    MAN = "man"
+    WOMAN = "woman"
+
+
 class UserGroupModel(Base):
     __tablename__ = "user_groups"
 
@@ -154,6 +159,7 @@ class UserProfileModel(Base):
     last_name: Mapped[Optional[str]] = mapped_column(String(100))
     nickname: Mapped[Optional[str]] = mapped_column(String(100))
     avatar: Mapped[Optional[str]] = mapped_column(String(255))
+    gender: Mapped[Optional[GenderEnum]] = mapped_column(Enum(GenderEnum))
     date_of_birth: Mapped[Optional[date]] = mapped_column(Date)
     status: Mapped[Optional[str]] = mapped_column(Text)
 

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime, time
-from typing import Optional, List, Literal
+from decimal import Decimal
+from typing import Optional, List, Literal, Annotated
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, computed_field
 
+from cafe_service.database import UserModel
 from cafe_service.database.models.cafe import RatingTypeEnum, WeekdayEnum
+from cafe_service.database.models.orders_and_payment import OrderStatusEnum
 
 
 # -------------------------
@@ -69,6 +72,13 @@ class CafeOpeningHoursNestedSchema(BaseModel):
     is_open: bool = True
     model_config = {"extra": "forbid"}
 
+
+class UserBriefSchema(BaseModel):
+    id: int
+    email: str
+    model_config = {"from_attributes": True}
+
+
 # -------------------------
 # Menu
 # -------------------------
@@ -81,6 +91,13 @@ class MenuItemCreateSchema(BaseModel):
 
 
 class MenuBriefSchema(BaseModel):
+    id: int
+    name: str
+
+    model_config = {"extra": "forbid"}
+
+
+class MenuItemBriefSchema(BaseModel):
     id: int
     name: str
 
@@ -289,3 +306,82 @@ class CafeQueryParamsSchema(BaseModel):
     sort_order: Literal["asc", "desc"] = "asc"
 
     model_config = {"extra": "forbid"}
+
+
+# -------------------------
+# Cart
+# -------------------------
+
+
+class CartItemAddRequestSchema(BaseModel):
+    menu_item_id: Annotated[int, Field(gt=0)]
+    quantity: Annotated[int, Field(gt=0)]
+
+    model_config = {"extra": "forbid"}
+
+
+class CartCreateOrUpdateRequestSchema(BaseModel):
+    items: List[CartItemAddRequestSchema] = Field(default_factory=list)
+
+    model_config = {"extra": "forbid"}
+
+
+class CartItemResponseSchema(BaseModel):
+    id: int
+    cafe_id: int
+    menu_item_id: int
+    quantity: int
+    unit_price: Decimal
+    menu_item: MenuItemBriefSchema
+    cafe: CafeBriefSchema
+
+    model_config = {"from_attributes": True}
+
+
+# -------------------------
+# Orders
+# -------------------------
+
+
+class OrderItemCreateSchema(BaseModel):
+    menu_item_id: Annotated[int, Field(gt=0)]
+    quantity: Annotated[int, Field(gt=0)]
+
+    model_config = {"extra": "forbid"}
+
+
+class OrderCheckoutSchema(BaseModel):
+    model_config = {"extra": "forbid"}
+
+
+class OrderItemResponseSchema(BaseModel):
+    id: int
+    menu_item_id: int | None
+    name_snapshot: str
+    unit_price: Decimal
+    quantity: int
+
+    model_config = {"from_attributes": True}
+
+    @computed_field
+    @property
+    def line_total(self) -> Decimal:
+        return self.quantity * self.unit_price
+
+
+class OrderResponseSchema(BaseModel):
+    id: int
+    user_id: int
+    cafe_id: int
+    status: OrderStatusEnum
+    subtotal: Decimal
+    discount_total: Decimal
+    total: Decimal
+    currency: str
+    created_at: datetime
+    updated_at: datetime
+    user: UserBriefSchema
+    cafe: CafeBriefSchema
+    items: List[OrderItemResponseSchema]
+
+    model_config = {"from_attributes": True}

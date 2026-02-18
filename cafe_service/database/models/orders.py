@@ -78,7 +78,11 @@ class OrderModel(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     cafe_id: Mapped[int] = mapped_column(ForeignKey("cafes.id", ondelete="CASCADE"), nullable=False, index=True)
-
+    reservation_id: Mapped[int | None] = mapped_column(
+        ForeignKey("reservations.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     status: Mapped["OrderStatusEnum"] = mapped_column(
         Enum(OrderStatusEnum),
         nullable=False,
@@ -97,12 +101,15 @@ class OrderModel(Base):
 
     user: Mapped["UserModel"] = relationship("UserModel", back_populates="orders")
     cafe: Mapped["CafeModel"] = relationship("CafeModel")
+    reservation: Mapped["ReservationModel | None"] = relationship("ReservationModel", back_populates="order")
 
     items: Mapped[list["OrderItemModel"]] = relationship(
         "OrderItemModel",
         back_populates="order",
         cascade="all, delete-orphan",
     )
+
+
 
 
 class OrderItemModel(Base):
